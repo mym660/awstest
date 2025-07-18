@@ -14,7 +14,7 @@ phases:
       - echo "Project Version -> $VERSION"
       - gradle test
       - gradle build
-      - docker build -t $IMAGE_NAME --build-arg JAR_FILE=build/libs/aliakseitkachuk-$VERSION.jar .
+      - docker build -t $IMAGE_NAME --build-arg JAR_FILE=build/libs/aliakseitkachuk-$VERSION.jar -f ../Dockerfile ..
   post_build:
     commands:
       - echo Build completed on `date`
