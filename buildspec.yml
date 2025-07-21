@@ -10,15 +10,15 @@ phases:
   pre_build:
     commands:
       - echo "Preparing to build..."
-      - chmod +x simple-app/gradlew
+      - cd simple-app
+      - chmod +x gradlew
 
   build:
     commands:
-      - echo "Building the JAR using Gradle..."
-      - cd simple-app
+      - echo "Starting gradle build..."
       - ./gradlew build
-      - echo "Building the Docker image..."
-      - docker build -t $ImageName -f Dockerfile .
+      - echo "Building Docker image..."
+      - docker build -t $ImageName .
 
   post_build:
     commands:
@@ -29,4 +29,4 @@ phases:
 
 artifacts:
   files:
-    - aws-test/build/libs/*.jar
+    - simple-app/build/libs/*.jar
