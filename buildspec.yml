@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: java-openjdk21-amazon-corretto-devel
+      java: corretto21
     commands:
       - ls
       - echo Installing dependencies...
