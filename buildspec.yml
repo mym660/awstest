@@ -1,27 +1,31 @@
 version: 0.2
 
+env:
+  variables:
+    IMAGE_TAG: "latest"
+
 phases:
   install:
     runtime-versions:
-      java: corretto21
+      docker: 20
+
   pre_build:
     commands:
-      - VERSION=$(grep "projectVersion" gradle.properties | awk -F'=' '{print $2}' | tr -d ' ')
-      - IMAGE_NAME=springboot-app-$VERSION
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_URI
+
   build:
     commands:
-      - echo Build started on `date`
-      - echo "Project Version -> $VERSION"
-      - gradle test
-      - gradle build
-      - docker build -t $IMAGE_NAME --build-arg JAR_FILE=build/libs/aliakseitkachuk-$VERSION.jar -f ../Dockerfile ..
+      - echo "Building the Docker image..."
+      - docker build -t $ImageName:$IMAGE_TAG -f simple-app/Dockerfile simple-app
+
   post_build:
     commands:
-      - echo Build completed on `date`
-      - sam package --s3-bucket aliaksei-tkachuk-bucket --template-file samTemplate.yml --output-template-file outputSamTemplate.yml
-      - ls -la build/libs
-      - docker tag $IMAGE_NAME:latest 133529410704.dkr.ecr.ap-south-1.amazonaws.com/$IMAGE_NAME:latest
+      - echo "Tagging image..."
+      - docker tag $ImageName:$IMAGE_TAG $ECR_URI/$ImageName:$IMAGE_TAG
+      - echo "Pushing image to ECR..."
+      - docker push $ECR_URI/$ImageName:$IMAGE_TAG
+
 artifacts:
   files:
-    - build/libs/aliakseitkachuk-$VERSION.jar
-    - outputSamTemplate.yml
+    - '**/*'
