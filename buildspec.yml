@@ -13,6 +13,11 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_URI
+      - chmod +x ./simple-app/gradlew     # ✅ Make gradlew executable
+      - cd simple-app
+      - echo "Running Gradle build..."
+      - ./gradlew build
+      - cd ..
 
   build:
     commands:
