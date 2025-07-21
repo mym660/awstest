@@ -5,20 +5,19 @@ phases:
     runtime-versions:
       java: corretto17
     commands:
-      - echo Installing Gradle...
-      - cd simple-app
+      - echo Installing dependencies...
       - chmod +x gradlew
 
   pre_build:
     commands:
-      - echo Building the JAR...
-      - cd simple-app
+      - echo Logging in to ECR...
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $ECR_URI
+      - echo Building JAR...
       - ./gradlew build
 
   build:
     commands:
       - echo Building Docker image...
-      - cd simple-app
       - docker build -t $ImageName .
 
   post_build:
@@ -30,4 +29,4 @@ phases:
 
 artifacts:
   files:
-    - simple-app/build/libs/*.jar
+    - build/libs/*.jar
