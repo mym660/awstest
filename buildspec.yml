@@ -5,26 +5,27 @@ phases:
     runtime-versions:
       java: corretto17
     commands:
-      - echo "Installing dependencies..."
-
-  pre_build:
-    commands:
-      - echo "Preparing to build..."
+      - echo Installing Gradle...
       - cd simple-app
       - chmod +x gradlew
 
+  pre_build:
+    commands:
+      - echo Building the JAR...
+      - cd simple-app
+      - ./gradlew build
+
   build:
     commands:
-      - echo "Starting gradle build..."
-      - ./gradlew build
-      - echo "Building Docker image..."
+      - echo Building Docker image...
+      - cd simple-app
       - docker build -t $ImageName .
 
   post_build:
     commands:
-      - echo "Tagging image..."
+      - echo Tagging image...
       - docker tag $ImageName:latest $ECR_URI/$ImageName:latest
-      - echo "Pushing image to ECR..."
+      - echo Pushing image to ECR...
       - docker push $ECR_URI/$ImageName:latest
 
 artifacts:
